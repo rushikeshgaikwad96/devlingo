@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import api from "../services/api";
 
 const languages = [
   { name: "JavaScript", icon: "🟨", color: "bg-yellow-500", slug: "javascript" },
@@ -18,6 +20,21 @@ export default function HomePage() {
     logout();
     navigate("/");
   };
+
+
+
+  useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("/auth/me");
+      useAuthStore.getState().setUser(res.data, useAuthStore.getState().token!);
+    } catch {
+      logout();
+      navigate("/");
+    }
+  };
+  if (!user) fetchUser();
+}, []);
 
   return (
     <div className="min-h-screen bg-dark text-white">

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import User from "../models/User";
-
+import { AuthRequest } from "../middleware/authMiddleware";
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -52,6 +52,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+
+
+
 export const login = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
@@ -93,4 +96,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: "Server error", error});
 
     }
+};
+
+
+export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 };
