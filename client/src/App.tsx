@@ -1,12 +1,19 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AuthPage from "./pages/AuthPage";
+import { useAuthStore } from "./store/authStore";
+
 function App() {
+  const token = useAuthStore((state) => state.token);
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-green-400 mb-4">DevLingo 🦉</h1>
-        <p className="text-gray-400 text-xl">Learn programming. One lesson at a time.</p>
-      </div>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={token ? <Navigate to="/home" /> : <AuthPage />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/home" element={token ? <div className="text-white p-8">Home page coming soon!</div> : <Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
