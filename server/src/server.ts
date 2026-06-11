@@ -8,3 +8,4 @@ connectDB().then(() => {
         console.log(`Server running on port ${PORT}`);
     });
 });
+// Nodemon reload trigger comment

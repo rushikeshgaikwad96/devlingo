@@ -8,23 +8,60 @@ import { useAuthStore } from "./store/authStore";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AuthModal from "./components/AuthModal";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = useAuthStore((state) => state.token);
+  const setAuthModal = useAuthStore((state) => state.setAuthModal);
+
+  if (!token) {
+    setTimeout(() => {
+      setAuthModal(true, "login");
+    }, 50);
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function App() {
-  const token = useAuthStore((state) => state.token);
+  const authModalOpen = useAuthStore((state) => state.authModalOpen);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={token ? <Navigate to="/home" /> : <AuthPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/home" element={token ? <HomePage /> : <Navigate to="/" />} />
-        <Route path="/learn/:language" element={token ? <LearnPage /> : <Navigate to="/" />} />
-        <Route path="/lesson/:id" element={token ? <LessonPage /> : <Navigate to="/" />} />
-        <Route path="/dashboard" element={token ? <DashboardPage /> : <Navigate to="/" />} />
-        <Route path="/leaderboard" element={token ? <LeaderboardPage /> : <Navigate to="/" />} />
-        <Route path="/profile" element={token ? <ProfilePage /> : <Navigate to="/" />} />
+        <Route path="/learn/:language" element={<LearnPage />} />
+        <Route path="/lesson/:id" element={<LessonPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute>
+              <LeaderboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {authModalOpen && <AuthModal />}
     </BrowserRouter>
   );
 }

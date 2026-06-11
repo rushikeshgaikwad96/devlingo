@@ -7,16 +7,26 @@ import { useAuthStore } from "../store/authStore";
 export default function LearnPage() {
   const { language } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, setAuthModal } = useAuthStore();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timer = setTimeout(() => setShowSkeleton(true), 200);
+    } else {
+      setShowSkeleton(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     const fetchLessons = async () => {
       try {
         const res = await api.get(`/lessons/${language}`);
         setLessons(res.data);
-        console.log("Lessons:", res.data);
       } catch (err) {
         console.log("Error:", err);
         navigate("/home");
@@ -25,10 +35,15 @@ export default function LearnPage() {
       }
     };
     fetchLessons();
-  }, [language]);
+  }, [language, navigate]);
 
-  if (loading) {
+  if (loading && showSkeleton) {
     return <LearnSkeleton />;
+  }
+
+  // If loading is true but skeleton is not shown yet, we can render null or keep it transparent
+  if (loading && !showSkeleton) {
+    return <div className="min-h-screen bg-dark text-white" />;
   }
 
   return (
@@ -38,17 +53,26 @@ export default function LearnPage() {
       <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
         <button
           onClick={() => navigate("/home")}
-          className="text-gray-400 hover:text-white transition-all"
+          className="text-gray-400 hover:text-white transition-all font-semibold"
         >
-          ← Back
+          ← Home
         </button>
         <h1 className="text-xl font-bold text-primary capitalize">
           🦉 {language}
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="text-warning">🔥 {user?.streak ?? 0}</span>
-          <span className="text-primary">⚡ {user?.xp ?? 0} XP</span>
-        </div>
+        {user ? (
+          <div className="flex items-center gap-4">
+            <span className="text-warning">🔥 {user.streak}</span>
+            <span className="text-primary">⚡ {user.xp} XP</span>
+          </div>
+        ) : (
+          <button
+            onClick={() => setAuthModal(true, "login")}
+            className="bg-primary hover:bg-green-600 text-white font-bold px-4 py-2 rounded-xl text-sm transition-all shadow-md shadow-primary/15"
+          >
+            Sign In
+          </button>
+        )}
       </nav>
 
       {/* Lessons */}

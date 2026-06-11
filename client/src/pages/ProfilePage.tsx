@@ -113,7 +113,7 @@ export default function ProfilePage() {
     })}`;
   };
 
-  if (loading || !user) {
+  if (!user) {
     return <ProfileSkeleton />;
   }
 
@@ -249,7 +249,13 @@ export default function ProfilePage() {
             <h3 className="text-xl font-bold mb-6 text-white flex items-center gap-2">
               📚 Languages Started
             </h3>
-            {!stats?.languagesStarted || stats.languagesStarted.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                {[1, 2].map((i) => (
+                  <div key={i} className="bg-gray-800 border border-gray-700 p-4 rounded-xl animate-pulse h-16" />
+                ))}
+              </div>
+            ) : !stats?.languagesStarted || stats.languagesStarted.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <p className="text-3xl mb-2">🚀</p>
                 <p className="text-sm">No languages started yet. Pick one on the home page!</p>

@@ -49,7 +49,7 @@ export default function LeaderboardPage() {
     return `#${index + 1}`;
   };
 
-  if (loading) {
+  if (!user) {
     return <LeaderboardSkeleton tab={tab} setTab={setTab} user={user} navigate={navigate} />;
   }
 
@@ -105,7 +105,11 @@ export default function LeaderboardPage() {
 
         {/* Leaders List */}
         <div className="flex flex-col gap-4">
-          {leaders.length === 0 ? (
+          {loading ? (
+            [1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-gray-900 border border-gray-700 rounded-2xl p-5 h-20 animate-pulse" />
+            ))
+          ) : leaders.length === 0 ? (
             <div className="text-center py-12 text-gray-500 bg-gray-900 border border-gray-700 rounded-2xl">
               <p className="text-4xl mb-2">🏁</p>
               <p>No activity recorded yet for this period.</p>
@@ -114,8 +118,8 @@ export default function LeaderboardPage() {
             leaders.map((leader, index) => (
               <div
                 key={leader._id}
-                style={{ animationDelay: `${index * 60}ms`, opacity: 0 }}
-                className={`p-5 rounded-2xl border flex items-center justify-between transition-all duration-300 hover:scale-102 animate-slideUp ${
+                style={{ animationDelay: `${index * 60}ms` }}
+                className={`p-5 rounded-2xl border flex items-center justify-between transition-all duration-300 hover:scale-102 opacity-0 animate-slideUp ${
                   leader.username === user?.username
                     ? "border-primary bg-primary/10 shadow-lg shadow-primary/5"
                     : "border-gray-700 bg-gray-900"
@@ -159,8 +163,8 @@ export default function LeaderboardPage() {
                 ••••••
               </div>
               <div
-                className="p-5 rounded-2xl border border-primary bg-primary/10 flex items-center justify-between transition-all hover:scale-102 animate-slideUp shadow-lg shadow-primary/5"
-                style={{ animationDelay: `${leaders.length * 60}ms`, opacity: 0 }}
+                className="p-5 rounded-2xl border border-primary bg-primary/10 flex items-center justify-between transition-all hover:scale-102 opacity-0 animate-slideUp shadow-lg shadow-primary/5"
+                style={{ animationDelay: `${leaders.length * 60}ms` }}
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-md font-black text-primary">

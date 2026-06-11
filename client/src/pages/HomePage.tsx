@@ -28,7 +28,7 @@ const languages = [
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, setAuthModal, token } = useAuthStore();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
 
@@ -39,19 +39,23 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!token) return;
       try {
         const res = await api.get("/auth/me");
-        useAuthStore.getState().setUser(res.data, useAuthStore.getState().token!);
+        useAuthStore.getState().setUser(res.data, token);
       } catch {
         logout();
-        navigate("/");
       }
     };
-    if (!user) fetchUser();
-  }, [user, logout, navigate]);
+    if (token && !user) fetchUser();
+  }, [token, user, logout]);
 
   useEffect(() => {
     const fetchStats = async () => {
+      if (!token) {
+        setStatsLoading(false);
+        return;
+      }
       try {
         const res = await api.get("/users/stats");
         setStats(res.data);
@@ -62,14 +66,15 @@ export default function HomePage() {
       }
     };
     fetchStats();
-  }, []);
+  }, [token]);
 
-  if (statsLoading || !user) {
+  // Only show skeleton on first loading when a token exists
+  if (token && (statsLoading || !user)) {
     return <HomeSkeleton />;
   }
 
-  const lastLanguage = user.lastLanguage;
-  const lastLangData = languages.find((l) => l.slug === lastLanguage);
+  const lastLanguage = user?.lastLanguage;
+  const lastLangData = lastLanguage ? languages.find((l) => l.slug === lastLanguage) : null;
   const lastLangStats = stats?.languagesStarted.find((l) => l.language === lastLanguage);
 
   const completed = lastLangStats?.lessonsCompleted ?? 0;
@@ -80,61 +85,95 @@ export default function HomePage() {
     <div className="min-h-screen bg-dark text-white">
       {/* Navbar */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
-        <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+        <h1
+          onClick={() => navigate("/")}
+          className="text-2xl font-bold text-primary flex items-center gap-2 cursor-pointer"
+        >
           <span>🦉</span> DevLingo
         </h1>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="text-warning text-xl">🔥</span>
-            <span className="font-bold">{user.streak}</span>
+        
+        {user ? (
+          <div className="flex items-center gap-6 col-span-2">
+            <div className="flex items-center gap-2">
+              <span className="text-warning text-xl">🔥</span>
+              <span className="font-bold">{user.streak}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">⚡</span>
+              <span className="font-bold text-primary">{user.xp} XP</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">❤️</span>
+              <span className="font-bold text-danger">{user.hearts}</span>
+            </div>
+            <button
+              onClick={() => navigate("/profile")}
+              className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
+            >
+              👤 Profile
+            </button>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => navigate("/leaderboard")}
+              className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
+            >
+              🏆 Leaderboard
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
+            >
+              Logout
+            </button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">⚡</span>
-            <span className="font-bold text-primary">{user.xp} XP</span>
+        ) : (
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setAuthModal(true, "login")}
+              className="text-gray-300 hover:text-white font-semibold transition-all px-4 py-2 text-sm"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setAuthModal(true, "register")}
+              className="bg-primary hover:bg-green-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-primary/15 hover:scale-105 active:scale-95"
+            >
+              Get Started
+            </button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">❤️</span>
-            <span className="font-bold text-danger">{user.hearts}</span>
-          </div>
-          <button
-            onClick={() => navigate("/profile")}
-            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
-          >
-            👤 Profile
-          </button>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={() => navigate("/leaderboard")}
-            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
-          >
-            🏆 Leaderboard
-          </button>
-          <button
-            onClick={handleLogout}
-            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
-          >
-            Logout
-          </button>
-        </div>
+        )}
       </nav>
 
       {/* Main content */}
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Welcome */}
-        <div className="mb-10">
-          <h2 className="text-3xl font-bold">
-            Welcome back, <span className="text-primary">{user.username}</span>! 👋
-          </h2>
-          <p className="text-gray-400 mt-2">Choose a language to start learning</p>
+        <div className="mb-10 text-center md:text-left">
+          {user ? (
+            <>
+              <h2 className="text-3xl font-bold">
+                Welcome back, <span className="text-primary">{user.username}</span>! 👋
+              </h2>
+              <p className="text-gray-400 mt-2">Choose a language to resume your journey</p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl md:text-4.5xl font-extrabold tracking-tight">
+                Learn programming. <span className="text-primary">Free.</span> 🦉
+              </h2>
+              <p className="text-gray-400 mt-2 text-base md:text-lg">
+                Master HTML, CSS, JavaScript, Python, React, and Node.js through bite-sized interactive challenges.
+              </p>
+            </>
+          )}
         </div>
 
         {/* Continue Learning */}
-        {lastLanguage && lastLangData && (
+        {user && lastLanguage && lastLangData && (
           <div className="mb-10 bg-gray-900 border border-gray-700 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl hover:border-primary/50 transition-all">
             <div className="flex items-center gap-4 w-full md:w-auto">
               <span className="text-5xl">{lastLangData.icon}</span>

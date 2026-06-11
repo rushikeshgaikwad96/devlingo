@@ -5,12 +5,12 @@ import {
   getLessonById,
   completeLesson,
 } from "../controllers/lessonController";
-import { protect } from "../middleware/authMiddleware";
+import { protect, optionalProtect } from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.get("/:language", protect, getLessons);
-router.get("/single/:id", protect, getLessonById);
+router.get("/:language", optionalProtect, getLessons);
+router.get("/single/:id", optionalProtect, getLessonById);
 router.post("/complete", protect, completeLesson);
 router.get("/me", protect, getMe);
 export default router;

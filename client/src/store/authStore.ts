@@ -4,6 +4,9 @@ import type { User } from "../types";
 interface AuthState {
   user: User | null;
   token: string | null;
+  authModalOpen: boolean;
+  authModalTab: "login" | "register";
+  setAuthModal: (open: boolean, tab?: "login" | "register") => void;
   setUser: (user: User, token: string) => void;
   logout: () => void;
   updateXP: (xp: number) => void;
@@ -15,10 +18,14 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: localStorage.getItem("token"),
+  authModalOpen: false,
+  authModalTab: "login",
+
+  setAuthModal: (open, tab = "login") => set({ authModalOpen: open, authModalTab: tab }),
 
   setUser: (user, token) => {
     localStorage.setItem("token", token);
-    set({ user, token });
+    set({ user, token, authModalOpen: false }); // Auto-close modal on success
   },
 
   logout: () => {

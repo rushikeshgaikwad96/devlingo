@@ -9,14 +9,16 @@ export const getLessons = async (req: AuthRequest, res: Response): Promise<void>
   try {
     const { language } = req.params;
 
-    // Update user's last language
-    await User.findByIdAndUpdate(req.userId, { $set: { lastLanguage: language } });
+    // Update user's last language if authenticated
+    if (req.userId) {
+      await User.findByIdAndUpdate(req.userId, { $set: { lastLanguage: language } });
+    }
 
     const lessons = await Lesson.find({ language, isPublished: true })
       .sort({ order: 1 })
       .select("-questions");
 
-    const progress = await Progress.find({ userId: req.userId });
+    const progress = req.userId ? await Progress.find({ userId: req.userId }) : [];
 
     const completedLessonIds = progress
       .filter(p => p.completed)
@@ -25,7 +27,9 @@ export const getLessons = async (req: AuthRequest, res: Response): Promise<void>
     const lessonsWithProgress = lessons.map((lesson, index) => ({
       ...lesson.toObject(),
       isCompleted: completedLessonIds.includes(lesson._id.toString()),
-      isLocked: index > 0 && !completedLessonIds.includes(lessons[index - 1]._id.toString()),
+      isLocked: req.userId
+        ? (index > 0 && !completedLessonIds.includes(lessons[index - 1]._id.toString()))
+        : false, // Unlock all lessons for public exploration!
     }));
 
     res.status(200).json(lessonsWithProgress);

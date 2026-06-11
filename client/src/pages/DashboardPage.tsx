@@ -77,7 +77,7 @@ export default function DashboardPage() {
     return days;
   };
 
-  if (loading || !user) {
+  if (!user) {
     return <DashboardSkeleton />;
   }
 
@@ -95,8 +95,11 @@ export default function DashboardPage() {
 
   // Time Spent Estimation: 5 mins per completed lesson
   const estTimeMin = progress.length * 5;
-  const formattedTimeSpent =
-    estTimeMin < 60 ? `${estTimeMin} mins` : `${Math.floor(estTimeMin / 60)}h ${estTimeMin % 60}m`;
+  const formattedTimeSpent = loading
+    ? "..."
+    : estTimeMin < 60
+    ? `${estTimeMin} mins`
+    : `${Math.floor(estTimeMin / 60)}h ${estTimeMin % 60}m`;
 
   // Next Badge level progress calculations
   const currentXP = user.xp;
@@ -186,7 +189,9 @@ export default function DashboardPage() {
                   key={idx}
                   title={`${day.toLocaleDateString()}: ${isActive ? "Active (Completed lesson)" : "No activity"}`}
                   className={`w-7 h-7 rounded-md border flex items-center justify-center text-[10px] font-bold transition-all hover:scale-115 cursor-help ${
-                    isActive
+                    loading
+                      ? "bg-gray-800/50 border-gray-700 animate-pulse text-transparent"
+                      : isActive
                       ? "bg-primary border-green-600 text-white shadow-md shadow-primary/30"
                       : "bg-gray-800 border-gray-700 text-gray-500"
                   }`}

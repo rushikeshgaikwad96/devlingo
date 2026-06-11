@@ -40,7 +40,7 @@ const getLanguageLabel = (lang: string): string => {
 export default function LessonPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, updateXP, updateStreak, updateHearts } = useAuthStore();
+  const { user, updateXP, updateStreak, updateHearts, setAuthModal } = useAuthStore();
 
   const [lesson, setLesson] = useState<FullLesson | null>(null);
   const [current, setCurrent] = useState(0);
@@ -54,6 +54,17 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [shakeHearts, setShakeHearts] = useState(false);
   const [showExplanation, setShowExplanation] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timer = setTimeout(() => setShowSkeleton(true), 200);
+    } else {
+      setShowSkeleton(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -70,10 +81,21 @@ export default function LessonPage() {
       }
     };
     fetchLesson();
-  }, [id]);
+  }, [id, navigate]);
 
-  if (loading) {
+  // Auto-transition to practice once user signs in successfully on this screen
+  useEffect(() => {
+    if (user && lesson && showExplanation) {
+      setShowExplanation(false);
+    }
+  }, [user, lesson, showExplanation]);
+
+  if (loading && showSkeleton) {
     return <LessonSkeleton />;
+  }
+
+  if (loading && !showSkeleton) {
+    return <div className="min-h-screen bg-dark text-white" />;
   }
 
   // OUT OF HEARTS LOCKOUT MODAL
@@ -123,10 +145,19 @@ export default function LessonPage() {
               </span>
             </div>
           </div>
-          <div className={`flex items-center gap-1.5 transition-all duration-300 ${shakeHearts ? "animate-shake text-danger" : ""}`}>
-            <span className="text-danger text-xl">❤️</span>
-            <span className="font-extrabold text-danger text-lg">{user?.hearts ?? 5}</span>
-          </div>
+          {user ? (
+            <div className={`flex items-center gap-1.5 transition-all duration-300 ${shakeHearts ? "animate-shake text-danger" : ""}`}>
+              <span className="text-danger text-xl">❤️</span>
+              <span className="font-extrabold text-danger text-lg">{user.hearts}</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAuthModal(true, "login")}
+              className="bg-primary hover:bg-green-600 text-white font-bold px-4 py-2 rounded-xl text-sm transition-all shadow-md shadow-primary/15"
+            >
+              Sign In
+            </button>
+          )}
         </div>
 
         {/* Learning Content */}
@@ -217,7 +248,13 @@ export default function LessonPage() {
         <div className="px-8 py-6 border-t border-gray-800 bg-dark/95 backdrop-blur-md">
           <div className="max-w-3xl mx-auto flex justify-end">
             <button
-              onClick={() => setShowExplanation(false)}
+              onClick={() => {
+                if (user) {
+                  setShowExplanation(false);
+                } else {
+                  setAuthModal(true, "login");
+                }
+              }}
               className="w-full sm:w-auto bg-primary hover:bg-green-600 text-white font-bold py-4 px-12 rounded-xl transition-all text-lg shadow-lg hover:scale-[1.02] shadow-primary/20 active:scale-[0.98]"
             >
               Start Practice →
