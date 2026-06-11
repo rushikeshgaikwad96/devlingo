@@ -7,6 +7,7 @@ interface AuthState {
   setUser: (user: User, token: string) => void;
   logout: () => void;
   updateXP: (xp: number) => void;
+  updateStreak: (streak: number) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -26,5 +27,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   updateXP: (xp) =>
     set((state) => ({
       user: state.user ? { ...state.user, xp } : null,
+    })),
+
+  updateStreak: (streak) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, streak } : null,
     })),
 }));

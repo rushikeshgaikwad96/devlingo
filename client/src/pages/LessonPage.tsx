@@ -14,7 +14,7 @@ interface FullLesson {
 export default function LessonPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { updateXP } = useAuthStore();
+  const { updateXP, updateStreak } = useAuthStore();
 
   const [lesson, setLesson] = useState<FullLesson | null>(null);
   const [current, setCurrent] = useState(0);
@@ -78,6 +78,7 @@ export default function LessonPage() {
         });
         setXpEarned(res.data.xpEarned);
         updateXP(res.data.totalXp);
+        updateStreak(res.data.streak);
         setFinished(true);
       } catch {
         setFinished(true);
@@ -151,17 +152,16 @@ export default function LessonPage() {
               <button
                 key={option}
                 onClick={() => !answered && setSelected(option)}
-                className={`p-4 rounded-xl border-2 text-left font-semibold transition-all ${
-                  answered
+                className={`p-4 rounded-xl border-2 text-left font-semibold transition-all ${answered
                     ? option === question.correct
                       ? "border-primary bg-primary/20 text-primary"
                       : option === selected
-                      ? "border-danger bg-danger/20 text-danger"
-                      : "border-gray-700 text-gray-500"
+                        ? "border-danger bg-danger/20 text-danger"
+                        : "border-gray-700 text-gray-500"
                     : selected === option
-                    ? "border-primary bg-primary/10"
-                    : "border-gray-700 hover:border-gray-500"
-                }`}
+                      ? "border-primary bg-primary/10"
+                      : "border-gray-700 hover:border-gray-500"
+                  }`}
               >
                 {option}
               </button>
@@ -183,16 +183,14 @@ export default function LessonPage() {
         {/* Feedback */}
         {answered && (
           <div
-            className={`mt-6 p-4 rounded-xl border ${
-              correct
+            className={`mt-6 p-4 rounded-xl border ${correct
                 ? "bg-primary/20 border-primary"
                 : "bg-danger/20 border-danger"
-            }`}
+              }`}
           >
             <p
-              className={`font-bold text-lg ${
-                correct ? "text-primary" : "text-danger"
-              }`}
+              className={`font-bold text-lg ${correct ? "text-primary" : "text-danger"
+                }`}
             >
               {correct ? "✓ Correct!" : "✗ Incorrect!"}
             </p>
@@ -219,11 +217,10 @@ export default function LessonPage() {
         ) : (
           <button
             onClick={handleNext}
-            className={`w-full font-bold py-4 rounded-xl transition-all text-lg text-white ${
-              correct
+            className={`w-full font-bold py-4 rounded-xl transition-all text-lg text-white ${correct
                 ? "bg-primary hover:bg-green-600"
                 : "bg-gray-700 hover:bg-gray-600"
-            }`}
+              }`}
           >
             {current + 1 < total ? "Next Question →" : "Finish Lesson 🎉"}
           </button>

@@ -24,17 +24,17 @@ export default function HomePage() {
 
 
   useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const res = await api.get("/auth/me");
-      useAuthStore.getState().setUser(res.data, useAuthStore.getState().token!);
-    } catch {
-      logout();
-      navigate("/");
-    }
-  };
-  if (!user) fetchUser();
-}, []);
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        useAuthStore.getState().setUser(res.data, useAuthStore.getState().token!);
+      } catch {
+        logout();
+        navigate("/");
+      }
+    };
+    if (!user) fetchUser();
+  }, []);
 
   return (
     <div className="min-h-screen bg-dark text-white">
@@ -60,6 +60,12 @@ export default function HomePage() {
             className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
           >
             Dashboard
+          </button>
+          <button
+            onClick={() => navigate("/leaderboard")}
+            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
+          >
+            🏆 Leaderboard
           </button>
           <button
             onClick={handleLogout}

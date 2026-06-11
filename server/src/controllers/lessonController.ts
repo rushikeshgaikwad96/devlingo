@@ -69,7 +69,7 @@ export const completeLesson = async (req: AuthRequest, res: Response): Promise<v
       return;
     }
 
-    // calculate XP earned
+    // calculate XP
     const xpEarned = lesson.questions.reduce(
       (total, q) => total + q.xpReward, 0
     );
@@ -83,11 +83,50 @@ export const completeLesson = async (req: AuthRequest, res: Response): Promise<v
       completedAt: new Date(),
     });
 
-    // update user XP and streak
+    // --- STREAK LOGIC ---
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // find last completed lesson before today
+    const lastProgress = await Progress.findOne({
+      userId: req.userId,
+      completed: true,
+      completedAt: { $lt: today },
+    }).sort({ completedAt: -1 });
+
+    let newStreak = 1; // default start
+
+    if (lastProgress) {
+      const lastDate = new Date(lastProgress.completedAt);
+      lastDate.setHours(0, 0, 0, 0);
+
+      const diffDays = Math.floor(
+        (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      const currentUser = await User.findById(req.userId);
+
+      if (diffDays === 1) {
+        // completed yesterday — continue streak
+        newStreak = (currentUser?.streak ?? 0) + 1;
+      } else if (diffDays === 0) {
+        // already did a lesson today — keep streak
+        newStreak = currentUser?.streak ?? 1;
+      } else {
+        // missed days — reset to 1
+        newStreak = 1;
+      }
+    }
+
+    // update user
     const user = await User.findByIdAndUpdate(
       req.userId,
       {
         $inc: { xp: xpEarned },
+        $set: { streak: newStreak },
       },
       { new: true }
     );
@@ -96,7 +135,9 @@ export const completeLesson = async (req: AuthRequest, res: Response): Promise<v
       message: "Lesson completed!",
       xpEarned,
       totalXp: user?.xp,
+      streak: user?.streak,
     });
+
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

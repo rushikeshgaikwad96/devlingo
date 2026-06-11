@@ -5,6 +5,7 @@ import LearnPage from "./pages/LearnPage";
 import LessonPage from "./pages/LessonPage";
 import DashboardPage from "./pages/DashboardPage";
 import { useAuthStore } from "./store/authStore";
+import LeaderboardPage from "./pages/LeaderboardPage";
 
 function App() {
   const token = useAuthStore((state) => state.token);
@@ -18,6 +19,7 @@ function App() {
         <Route path="/learn/:language" element={token ? <LearnPage /> : <Navigate to="/" />} />
         <Route path="/lesson/:id" element={token ? <LessonPage /> : <Navigate to="/" />} />
         <Route path="/dashboard" element={token ? <DashboardPage /> : <Navigate to="/" />} />
+        <Route path="/leaderboard" element={token ? <LeaderboardPage /> : <Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
