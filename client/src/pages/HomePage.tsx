@@ -47,8 +47,8 @@ export default function HomePage() {
         logout();
       }
     };
-    if (token && !user) fetchUser();
-  }, [token, user, logout]);
+    if (token) fetchUser();
+  }, [token, logout]);
 
   useEffect(() => {
     const fetchStats = async () => {

@@ -53,24 +53,40 @@ export default function LessonPage() {
   const [finished, setFinished] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [shakeHearts, setShakeHearts] = useState(false);
   const [showExplanation, setShowExplanation] = useState(true);
 
   useEffect(() => {
+    let active = true;
+    const timer = setTimeout(() => {
+      if (active) setShowSkeleton(true);
+    }, 200);
+
     const fetchLesson = async () => {
       try {
         const res = await api.get(`/lessons/single/${id}`);
-        setLesson(res.data);
-        if (!res.data.explanation || !res.data.explanation.description) {
-          setShowExplanation(false);
+        if (active) {
+          setLesson(res.data);
+          if (!res.data.explanation || !res.data.explanation.description) {
+            setShowExplanation(false);
+          }
         }
       } catch {
-        navigate("/home");
+        if (active) navigate("/home");
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+          clearTimeout(timer);
+        }
       }
     };
     fetchLesson();
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [id, navigate]);
 
   // Auto-transition to practice once user signs in successfully on this screen
@@ -81,7 +97,14 @@ export default function LessonPage() {
   }, [user, lesson, showExplanation]);
 
   if (loading) {
-    return <LessonSkeleton />;
+    return (
+      <LessonSkeleton
+        showContent={showSkeleton}
+        user={user}
+        navigate={navigate}
+        setAuthModal={setAuthModal}
+      />
+    );
   }
 
   // OUT OF HEARTS LOCKOUT MODAL
@@ -449,47 +472,88 @@ export default function LessonPage() {
   );
 }
 
-function LessonSkeleton() {
+function LessonSkeleton({
+  showContent,
+  user,
+  navigate,
+  setAuthModal,
+}: {
+  showContent: boolean;
+  user: any;
+  navigate: any;
+  setAuthModal: any;
+}) {
   return (
-    <div className="min-h-screen bg-dark text-white flex flex-col animate-pulse">
+    <div className="min-h-screen bg-dark text-white flex flex-col">
       {/* Header */}
       <div className="px-8 py-4 flex items-center justify-between border-b border-gray-800">
         <div className="flex items-center gap-4">
-          <div className="w-6 h-6 bg-gray-800 rounded" />
-          <div className="w-24 h-6 bg-gray-800 rounded" />
+          <button
+            onClick={() => navigate(-1)}
+            className="text-gray-400 hover:text-white transition-all text-xl"
+          >
+            ✕
+          </button>
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-1 bg-yellow-500/10 text-yellow-500 text-xs font-bold rounded-md uppercase tracking-wider border border-yellow-500/20">
+              💡 Lesson Guide
+            </span>
+            <span className="text-gray-500 text-sm hidden sm:inline">•</span>
+            <span className="text-gray-400 text-sm hidden sm:inline font-medium">
+              Review before you practice
+            </span>
+          </div>
         </div>
-        <div className="w-16 h-6 bg-gray-800 rounded" />
+        {user ? (
+          <div className="flex items-center gap-1.5">
+            <span className="text-danger text-xl">❤️</span>
+            <span className="font-extrabold text-danger text-lg">{user.hearts}</span>
+          </div>
+        ) : (
+          <button
+            onClick={() => setAuthModal(true, "login")}
+            className="bg-primary hover:bg-green-600 text-white font-bold px-4 py-2 rounded-xl text-sm transition-all shadow-md shadow-primary/15"
+          >
+            Sign In
+          </button>
+        )}
       </div>
 
       {/* Learning Content Skeleton */}
       <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-10 space-y-6">
-        {/* Meta Header */}
-        <div className="flex items-center gap-2">
-          <div className="w-16 h-4 bg-gray-800 rounded" />
-          <div className="w-24 h-4 bg-gray-800 rounded" />
-        </div>
+        {showContent ? (
+          <div className="animate-pulse space-y-6">
+            {/* Meta Header */}
+            <div className="flex items-center gap-2">
+              <div className="w-16 h-4 bg-gray-800 rounded" />
+              <div className="w-24 h-4 bg-gray-800 rounded" />
+            </div>
 
-        {/* Title */}
-        <div className="w-3/4 h-10 bg-gray-800 rounded mb-6" />
+            {/* Title */}
+            <div className="w-3/4 h-10 bg-gray-800 rounded mb-6" />
 
-        {/* Concept Card Skeleton */}
-        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 sm:p-8 space-y-3">
-          <div className="w-40 h-6 bg-gray-800 rounded" />
-          <div className="w-full h-4 bg-gray-800 rounded" />
-          <div className="w-5/6 h-4 bg-gray-800 rounded" />
-          <div className="w-4/5 h-4 bg-gray-800 rounded" />
-        </div>
+            {/* Concept Card Skeleton */}
+            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 sm:p-8 space-y-3">
+              <div className="w-40 h-6 bg-gray-800 rounded" />
+              <div className="w-full h-4 bg-gray-800 rounded" />
+              <div className="w-5/6 h-4 bg-gray-800 rounded" />
+              <div className="w-4/5 h-4 bg-gray-800 rounded" />
+            </div>
 
-        {/* Syntax Card Skeleton */}
-        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 space-y-3">
-          <div className="w-32 h-6 bg-gray-800 rounded" />
-          <div className="w-full h-12 bg-gray-900 rounded-xl animate-pulse" />
-        </div>
+            {/* Syntax Card Skeleton */}
+            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 space-y-3">
+              <div className="w-32 h-6 bg-gray-800 rounded" />
+              <div className="w-full h-12 bg-gray-900 rounded-xl" />
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {/* Footer */}
       <div className="px-8 py-6 border-t border-gray-800 flex justify-end">
-        <div className="w-full sm:w-40 h-14 bg-gray-800 rounded-xl" />
+        {showContent ? (
+          <div className="w-full sm:w-40 h-14 bg-gray-800 rounded-xl animate-pulse" />
+        ) : null}
       </div>
     </div>
   );

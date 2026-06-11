@@ -10,23 +10,39 @@ export default function LearnPage() {
   const { user, setAuthModal } = useAuthStore();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let active = true;
+    const timer = setTimeout(() => {
+      if (active) setShowSkeleton(true);
+    }, 200);
+
     const fetchLessons = async () => {
       setLoading(true);
       setError("");
       try {
         const res = await api.get(`/lessons/${language}`);
-        setLessons(res.data);
+        if (active) setLessons(res.data);
       } catch (err) {
         console.log("Error:", err);
-        setError("Failed to load lessons. Please verify the backend API server is running on port 5000 and connected to MongoDB.");
+        if (active) {
+          setError("Failed to load lessons. Please verify the backend API server is running on port 5000 and connected to MongoDB.");
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+          clearTimeout(timer);
+        }
       }
     };
     fetchLessons();
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [language]);
 
   return (
@@ -63,23 +79,25 @@ export default function LearnPage() {
         <h2 className="text-2xl font-bold mb-8">Choose a lesson</h2>
 
         {loading ? (
-          <div className="flex flex-col gap-4 animate-pulse">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-gray-900 border border-gray-700 rounded-2xl p-6 h-24 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-800" />
-                  <div className="space-y-2">
-                    <div className="w-40 h-5 bg-gray-800 rounded" />
-                    <div className="w-24 h-4 bg-gray-800 rounded" />
+          showSkeleton ? (
+            <div className="flex flex-col gap-4 animate-pulse">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-gray-900 border border-gray-700 rounded-2xl p-6 h-24 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gray-800" />
+                    <div className="space-y-2">
+                      <div className="w-40 h-5 bg-gray-800 rounded" />
+                      <div className="w-24 h-4 bg-gray-800 rounded" />
+                    </div>
                   </div>
+                  <div className="w-20 h-9 bg-gray-800 rounded-xl" />
                 </div>
-                <div className="w-20 h-9 bg-gray-800 rounded-xl" />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : null
         ) : error ? (
           <div className="text-center py-16 bg-danger/10 border border-danger/20 rounded-2xl p-6 shadow-lg">
             <p className="text-danger text-4xl mb-3">⚠️</p>
