@@ -40,7 +40,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                     email: user.email,
                     xp: user.xp,
                     streak: user.streak,
+                    longestStreak: user.longestStreak || 0,
                     hearts: user.hearts,
+                    lastLanguage: user.lastLanguage || "",
                 },
 
         });
@@ -80,6 +82,16 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             { expiresIn: "7d" }
         );
 
+        // Restore hearts if 24 hours have passed since last restoration
+        const now = new Date();
+        const lastRestore = user.lastHeartsRestore || user.createdAt || now;
+        const diffHours = (now.getTime() - new Date(lastRestore).getTime()) / (1000 * 60 * 60);
+        if (diffHours >= 24) {
+            user.hearts = 5;
+            user.lastHeartsRestore = now;
+            await user.save();
+        }
+
         res.status(200).json({
             token,
             user: {
@@ -88,9 +100,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 email: user.email,
                 xp: user.xp,
                 streak: user.streak,
+                longestStreak: user.longestStreak || 0,
                 hearts: user.hearts,
+                lastLanguage: user.lastLanguage || "",
             },
         });
+
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error});

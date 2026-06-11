@@ -8,6 +8,8 @@ interface AuthState {
   logout: () => void;
   updateXP: (xp: number) => void;
   updateStreak: (streak: number) => void;
+  updateHearts: (hearts: number) => void;
+  updateUserFields: (fields: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -32,5 +34,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   updateStreak: (streak) =>
     set((state) => ({
       user: state.user ? { ...state.user, streak } : null,
+    })),
+
+  updateHearts: (hearts) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, hearts } : null,
+    })),
+
+  updateUserFields: (fields) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, ...fields } : null,
     })),
 }));

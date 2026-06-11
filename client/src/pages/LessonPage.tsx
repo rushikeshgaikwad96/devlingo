@@ -14,7 +14,7 @@ interface FullLesson {
 export default function LessonPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { updateXP, updateStreak } = useAuthStore();
+  const { user, updateXP, updateStreak, updateHearts } = useAuthStore();
 
   const [lesson, setLesson] = useState<FullLesson | null>(null);
   const [current, setCurrent] = useState(0);
@@ -26,6 +26,7 @@ export default function LessonPage() {
   const [finished, setFinished] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [shakeHearts, setShakeHearts] = useState(false);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -42,9 +43,26 @@ export default function LessonPage() {
   }, [id]);
 
   if (loading) {
+    return <LessonSkeleton />;
+  }
+
+  // OUT OF HEARTS LOCKOUT MODAL
+  if (user && user.hearts <= 0) {
     return (
-      <div className="min-h-screen bg-dark flex items-center justify-center">
-        <p className="text-white text-xl animate-pulse">Loading lesson...</p>
+      <div className="min-h-screen bg-dark flex items-center justify-center px-4">
+        <div className="text-center max-w-sm bg-gray-900 border border-gray-700 p-8 rounded-2xl shadow-2xl animate-shake">
+          <p className="text-6xl mb-4">💔</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Out of Hearts!</h2>
+          <p className="text-gray-400 mb-6 text-sm">
+            You are out of hearts. Come back tomorrow or restore them on your profile page to continue.
+          </p>
+          <button
+            onClick={() => navigate("/home")}
+            className="w-full bg-primary hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-all hover:scale-105"
+          >
+            ← Back to Home
+          </button>
+        </div>
       </div>
     );
   }
@@ -55,12 +73,24 @@ export default function LessonPage() {
   const total = lesson.questions.length;
   const progress = (current / total) * 100;
 
-  const handleAnswer = () => {
+  const handleAnswer = async () => {
     const answer = question.type === "fill-blank" ? input.trim() : selected;
     const isCorrect = answer.toLowerCase() === question.correct.toLowerCase();
     setCorrect(isCorrect);
     setAnswered(true);
-    if (isCorrect) setScore((s) => s + 1);
+    if (isCorrect) {
+      setScore((s) => s + 1);
+    } else {
+      // Wrong answer - trigger shake and call API
+      setShakeHearts(true);
+      setTimeout(() => setShakeHearts(false), 500);
+      try {
+        const res = await api.post("/users/lose-heart");
+        updateHearts(res.data.hearts);
+      } catch (err) {
+        console.error("Failed to lose heart", err);
+      }
+    }
   };
 
   const handleNext = async () => {
@@ -123,7 +153,7 @@ export default function LessonPage() {
       <div className="px-8 py-4 flex items-center gap-4 border-b border-gray-800">
         <button
           onClick={() => navigate(-1)}
-          className="text-gray-400 hover:text-white transition-all"
+          className="text-gray-400 hover:text-white transition-all text-xl"
         >
           ✕
         </button>
@@ -133,7 +163,11 @@ export default function LessonPage() {
             style={{ width: `${progress}%` }}
           />
         </div>
-        <span className="text-gray-400 text-sm">{current + 1}/{total}</span>
+        <div className={`flex items-center gap-1.5 transition-all duration-300 ${shakeHearts ? "animate-shake text-danger" : ""}`}>
+          <span className="text-danger text-xl">❤️</span>
+          <span className="font-extrabold text-danger text-lg">{user?.hearts ?? 5}</span>
+        </div>
+        <span className="text-gray-400 text-sm ml-2">{current + 1}/{total}</span>
       </div>
 
       {/* Question */}
@@ -197,7 +231,7 @@ export default function LessonPage() {
             {!correct && (
               <p className="text-gray-300 mt-1">
                 Correct answer:{" "}
-                <span className="font-bold text-white">{question.correct}</span>
+                <span className="font-bold text-primary">{question.correct}</span>
               </p>
             )}
           </div>
@@ -225,6 +259,36 @@ export default function LessonPage() {
             {current + 1 < total ? "Next Question →" : "Finish Lesson 🎉"}
           </button>
         )}
+      </div>
+    </div>
+  );
+}
+
+function LessonSkeleton() {
+  return (
+    <div className="min-h-screen bg-dark text-white flex flex-col animate-pulse">
+      {/* Header */}
+      <div className="px-8 py-4 flex items-center gap-4 border-b border-gray-800">
+        <div className="w-6 h-6 bg-gray-800 rounded" />
+        <div className="flex-1 bg-gray-800 rounded-full h-4" />
+        <div className="w-16 h-6 bg-gray-800 rounded" />
+      </div>
+
+      {/* Question */}
+      <div className="flex-1 max-w-2xl mx-auto w-full px-8 py-12">
+        <div className="w-32 h-4 bg-gray-800 rounded mb-4" />
+        <div className="w-full h-8 bg-gray-800 rounded mb-8" />
+
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="p-4 rounded-xl border-2 border-gray-800 bg-gray-900 h-14" />
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="px-8 py-6 border-t border-gray-800">
+        <div className="w-full h-14 bg-gray-800 rounded-xl" />
       </div>
     </div>
   );

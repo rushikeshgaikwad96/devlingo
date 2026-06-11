@@ -6,6 +6,8 @@ import LessonPage from "./pages/LessonPage";
 import DashboardPage from "./pages/DashboardPage";
 import { useAuthStore } from "./store/authStore";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import ProfilePage from "./pages/ProfilePage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const token = useAuthStore((state) => state.token);
@@ -20,6 +22,8 @@ function App() {
         <Route path="/lesson/:id" element={token ? <LessonPage /> : <Navigate to="/" />} />
         <Route path="/dashboard" element={token ? <DashboardPage /> : <Navigate to="/" />} />
         <Route path="/leaderboard" element={token ? <LeaderboardPage /> : <Navigate to="/" />} />
+        <Route path="/profile" element={token ? <ProfilePage /> : <Navigate to="/" />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

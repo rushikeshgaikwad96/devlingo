@@ -28,11 +28,7 @@ export default function LearnPage() {
   }, [language]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-dark flex items-center justify-center">
-        <p className="text-white text-xl animate-pulse">Loading lessons...</p>
-      </div>
-    );
+    return <LearnSkeleton />;
   }
 
   return (
@@ -122,6 +118,38 @@ export default function LearnPage() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function LearnSkeleton() {
+  return (
+    <div className="min-h-screen bg-dark text-white animate-pulse">
+      {/* Navbar */}
+      <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
+        <div className="w-16 h-6 bg-gray-800 rounded" />
+        <div className="w-32 h-6 bg-gray-800 rounded animate-pulse" />
+        <div className="w-20 h-6 bg-gray-800 rounded" />
+      </nav>
+
+      {/* Main Content */}
+      <div className="max-w-2xl mx-auto px-8 py-12">
+        <div className="w-48 h-8 bg-gray-800 rounded mb-8" />
+        <div className="flex flex-col gap-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="bg-gray-900 border border-gray-700 rounded-2xl p-6 h-24 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gray-800" />
+                <div className="space-y-2">
+                  <div className="w-40 h-5 bg-gray-800 rounded" />
+                  <div className="w-24 h-4 bg-gray-800 rounded" />
+                </div>
+              </div>
+              <div className="w-20 h-9 bg-gray-800 rounded-xl" />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

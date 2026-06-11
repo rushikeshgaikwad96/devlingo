@@ -5,6 +5,9 @@ export interface User {
   xp: number;
   streak: number;
   hearts: number;
+  longestStreak?: number;
+  lastLanguage?: string;
+  createdAt?: string;
 }
 
 export interface Lesson {

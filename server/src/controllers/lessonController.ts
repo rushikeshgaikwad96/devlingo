@@ -9,6 +9,9 @@ export const getLessons = async (req: AuthRequest, res: Response): Promise<void>
   try {
     const { language } = req.params;
 
+    // Update user's last language
+    await User.findByIdAndUpdate(req.userId, { $set: { lastLanguage: language } });
+
     const lessons = await Lesson.find({ language, isPublished: true })
       .sort({ order: 1 })
       .select("-questions");
@@ -80,6 +83,7 @@ export const completeLesson = async (req: AuthRequest, res: Response): Promise<v
       lessonId,
       completed: true,
       score,
+      xpEarned,
       completedAt: new Date(),
     });
 
@@ -121,12 +125,16 @@ export const completeLesson = async (req: AuthRequest, res: Response): Promise<v
       }
     }
 
+    // find user to calculate longestStreak update
+    const currentUser = await User.findById(req.userId);
+    const updatedLongestStreak = Math.max(currentUser?.longestStreak ?? 0, newStreak);
+
     // update user
     const user = await User.findByIdAndUpdate(
       req.userId,
       {
         $inc: { xp: xpEarned },
-        $set: { streak: newStreak },
+        $set: { streak: newStreak, longestStreak: updatedLongestStreak },
       },
       { new: true }
     );
