@@ -10,21 +10,24 @@ export default function LearnPage() {
   const { user, setAuthModal } = useAuthStore();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchLessons = async () => {
+      setLoading(true);
+      setError("");
       try {
         const res = await api.get(`/lessons/${language}`);
         setLessons(res.data);
       } catch (err) {
         console.log("Error:", err);
-        navigate("/");
+        setError("Failed to load lessons. Please verify the backend API server is running on port 5000 and connected to MongoDB.");
       } finally {
         setLoading(false);
       }
     };
     fetchLessons();
-  }, [language, navigate]);
+  }, [language]);
 
   return (
     <div className="min-h-screen bg-dark text-white flex flex-col">
@@ -76,6 +79,18 @@ export default function LearnPage() {
                 <div className="w-20 h-9 bg-gray-800 rounded-xl" />
               </div>
             ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-16 bg-danger/10 border border-danger/20 rounded-2xl p-6 shadow-lg">
+            <p className="text-danger text-4xl mb-3">⚠️</p>
+            <h3 className="text-lg font-bold text-white mb-2">Connection Error</h3>
+            <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed">{error}</p>
+            <button
+              onClick={() => navigate("/")}
+              className="mt-6 bg-gray-800 hover:bg-gray-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 text-sm"
+            >
+              ← Back to Home
+            </button>
           </div>
         ) : lessons.length === 0 ? (
           <div className="text-center py-20">
