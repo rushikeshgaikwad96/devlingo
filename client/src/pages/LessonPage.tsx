@@ -54,17 +54,6 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [shakeHearts, setShakeHearts] = useState(false);
   const [showExplanation, setShowExplanation] = useState(true);
-  const [showSkeleton, setShowSkeleton] = useState(false);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (loading) {
-      timer = setTimeout(() => setShowSkeleton(true), 200);
-    } else {
-      setShowSkeleton(false);
-    }
-    return () => clearTimeout(timer);
-  }, [loading]);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -90,12 +79,8 @@ export default function LessonPage() {
     }
   }, [user, lesson, showExplanation]);
 
-  if (loading && showSkeleton) {
+  if (loading) {
     return <LessonSkeleton />;
-  }
-
-  if (loading && !showSkeleton) {
-    return <div className="min-h-screen bg-dark text-white" />;
   }
 
   // OUT OF HEARTS LOCKOUT MODAL
@@ -464,27 +449,43 @@ function LessonSkeleton() {
   return (
     <div className="min-h-screen bg-dark text-white flex flex-col animate-pulse">
       {/* Header */}
-      <div className="px-8 py-4 flex items-center gap-4 border-b border-gray-800">
-        <div className="w-6 h-6 bg-gray-800 rounded" />
-        <div className="flex-1 bg-gray-800 rounded-full h-4" />
+      <div className="px-8 py-4 flex items-center justify-between border-b border-gray-800">
+        <div className="flex items-center gap-4">
+          <div className="w-6 h-6 bg-gray-800 rounded" />
+          <div className="w-24 h-6 bg-gray-800 rounded" />
+        </div>
         <div className="w-16 h-6 bg-gray-800 rounded" />
       </div>
 
-      {/* Question */}
-      <div className="flex-1 max-w-2xl mx-auto w-full px-8 py-12">
-        <div className="w-32 h-4 bg-gray-800 rounded mb-4" />
-        <div className="w-full h-8 bg-gray-800 rounded mb-8" />
+      {/* Learning Content Skeleton */}
+      <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-10 space-y-6">
+        {/* Meta Header */}
+        <div className="flex items-center gap-2">
+          <div className="w-16 h-4 bg-gray-800 rounded" />
+          <div className="w-24 h-4 bg-gray-800 rounded" />
+        </div>
 
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-4 rounded-xl border-2 border-gray-800 bg-gray-900 h-14" />
-          ))}
+        {/* Title */}
+        <div className="w-3/4 h-10 bg-gray-800 rounded mb-6" />
+
+        {/* Concept Card Skeleton */}
+        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 sm:p-8 space-y-3">
+          <div className="w-40 h-6 bg-gray-800 rounded" />
+          <div className="w-full h-4 bg-gray-800 rounded" />
+          <div className="w-5/6 h-4 bg-gray-800 rounded" />
+          <div className="w-4/5 h-4 bg-gray-800 rounded" />
+        </div>
+
+        {/* Syntax Card Skeleton */}
+        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 space-y-3">
+          <div className="w-32 h-6 bg-gray-800 rounded" />
+          <div className="w-full h-12 bg-gray-900 rounded-xl animate-pulse" />
         </div>
       </div>
 
       {/* Footer */}
-      <div className="px-8 py-6 border-t border-gray-800">
-        <div className="w-full h-14 bg-gray-800 rounded-xl" />
+      <div className="px-8 py-6 border-t border-gray-800 flex justify-end">
+        <div className="w-full sm:w-40 h-14 bg-gray-800 rounded-xl" />
       </div>
     </div>
   );
