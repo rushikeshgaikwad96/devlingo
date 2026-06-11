@@ -56,6 +56,12 @@ export default function HomePage() {
             <span className="font-bold text-danger">{user?.hearts ?? 5}</span>
           </div>
           <button
+            onClick={() => navigate("/dashboard")}
+            className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
+          >
+            Dashboard
+          </button>
+          <button
             onClick={handleLogout}
             className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-sm transition-all"
           >

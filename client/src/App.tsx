@@ -3,6 +3,7 @@ import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import LearnPage from "./pages/LearnPage";
 import LessonPage from "./pages/LessonPage";
+import DashboardPage from "./pages/DashboardPage";
 import { useAuthStore } from "./store/authStore";
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Route path="/home" element={token ? <HomePage /> : <Navigate to="/" />} />
         <Route path="/learn/:language" element={token ? <LearnPage /> : <Navigate to="/" />} />
         <Route path="/lesson/:id" element={token ? <LessonPage /> : <Navigate to="/" />} />
-        <Route path="/lesson/:id" element={token ? <div className="text-white p-8">Lesson player coming soon!</div> : <Navigate to="/" />} />
+        <Route path="/dashboard" element={token ? <DashboardPage /> : <Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
