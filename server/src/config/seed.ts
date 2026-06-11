@@ -12,6 +12,12 @@ const lessonsData = [
     topic: "basics",
     order: 1,
     isPublished: true,
+    explanation: {
+      description: "Variables are containers for storing data values. In modern JavaScript, variables are block-scoped when declared using 'let' and 'const'. You can reassign 'let' variables, but 'const' variables are read-only (constants) and cannot be reassigned after declaration.",
+      syntax: "let variableName = value;\nconst constantName = value;",
+      exampleCode: "let score = 10;\nscore = 15; // Reassignment is allowed\n\nconst gravity = 9.8;\n// gravity = 10; // Error: Assignment to constant variable\n\nconsole.log(score);\nconsole.log(gravity);",
+      exampleOutput: "15\n9.8"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -46,6 +52,12 @@ const lessonsData = [
     topic: "basics",
     order: 2,
     isPublished: true,
+    explanation: {
+      description: "Functions are blocks of code designed to perform particular tasks. An arrow function expression provides a compact syntax for writing functions. Unlike standard function declarations, arrow functions do not bind their own 'this' value.",
+      syntax: "const functionName = (params) => {\n  return value;\n};",
+      exampleCode: "const add = (a, b) => a + b;\nconst greet = (name) => `Hello, ${name}!`;\n\nconsole.log(add(5, 3));\nconsole.log(greet(\"World\"));",
+      exampleOutput: "8\nHello, World!"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -80,6 +92,12 @@ const lessonsData = [
     topic: "data structures",
     order: 3,
     isPublished: true,
+    explanation: {
+      description: "Arrays are ordered lists used to store multiple elements in a single variable. Built-in methods let you query and transform arrays. The 'map()' method creates a new array by performing a function on each element, while 'filter()' returns elements that match a test condition.",
+      syntax: "const newArray = arr.map(element => transform);\nconst filteredArray = arr.filter(element => booleanCondition);",
+      exampleCode: "const numbers = [1, 2, 3, 4];\nconst doubled = numbers.map(x => x * 2);\nconst evens = numbers.filter(x => x % 2 === 0);\n\nconsole.log(doubled);\nconsole.log(evens);",
+      exampleOutput: "[2, 4, 6, 8]\n[2, 4]"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -109,6 +127,12 @@ const lessonsData = [
     topic: "data structures",
     order: 4,
     isPublished: true,
+    explanation: {
+      description: "Objects are collections of key-value pairs. Destructuring syntax lets you unpack properties directly into distinct variables. The spread operator (...) allows copying or merging fields from one object to another.",
+      syntax: "const { prop1, prop2 } = object;\nconst copyObj = { ...originalObj };",
+      exampleCode: "const user = { name: 'Alex', age: 24 };\nconst { name, age } = user;\nconst copy = { ...user, active: true };\n\nconsole.log(name);\nconsole.log(copy.active);",
+      exampleOutput: "Alex\ntrue"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -143,6 +167,12 @@ const lessonsData = [
     topic: "advanced",
     order: 5,
     isPublished: true,
+    explanation: {
+      description: "Async/Await makes asynchronous promise-based code read like synchronous code. The 'async' keyword declares a function that returns a Promise. The 'await' keyword pauses execution until the promise resolves, allowing errors to be captured using 'try/catch' blocks.",
+      syntax: "async function getData() {\n  try {\n    const res = await fetch(url);\n  } catch (err) {\n    // handle error\n  }\n}",
+      exampleCode: "const getMessage = () => Promise.resolve(\"Hello!\");\n\nasync function printMsg() {\n  try {\n    const msg = await getMessage();\n    console.log(msg);\n  } catch (e) {\n    console.log(\"Error\", e);\n  }\n}\n\nprintMsg();",
+      exampleOutput: "Hello!"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -179,6 +209,12 @@ const lessonsData = [
     topic: "basics",
     order: 1,
     isPublished: true,
+    explanation: {
+      description: "Python has dynamic typing, meaning variables do not require explicit type declarations. The interpreter infers the type automatically. Standard types include integers (int), decimals (float), booleans (bool), and text (str).",
+      syntax: "variable_name = value",
+      exampleCode: "age = 25          # int\nprice = 19.99      # float\nis_active = True   # bool\nname = \"Alice\"     # str\n\nprint(type(age))\nprint(is_active)",
+      exampleOutput: "<class 'int'>\nTrue"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -208,6 +244,12 @@ const lessonsData = [
     topic: "data structures",
     order: 2,
     isPublished: true,
+    explanation: {
+      description: "Lists are ordered, mutable sequences in Python. You can add items using 'append()', delete items with 'remove()', and query list size using 'len()'. Slices let you retrieve subsets using '[start:stop]' syntax.",
+      syntax: "my_list = [items]\nmy_list.append(item)\nsub = my_list[start:stop]",
+      exampleCode: "items = [10, 20, 30, 40]\nitems.append(50)\n\nprint(len(items))\nprint(items[1:3])",
+      exampleOutput: "5\n[20, 30]"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -237,6 +279,12 @@ const lessonsData = [
     topic: "basics",
     order: 3,
     isPublished: true,
+    explanation: {
+      description: "Functions in Python are defined with the 'def' keyword. They can return values using 'return' and support default parameter values. The '*args' symbol enables passing an arbitrary number of positional arguments.",
+      syntax: "def function_name(param1, param2=default, *args):\n    # logic\n    return value",
+      exampleCode: "def greet(name=\"Guest\"):\n    return f\"Hello, {name}\"\n\ndef total(*args):\n    return sum(args)\n\nprint(greet())\nprint(total(1, 2, 3, 4))",
+      exampleOutput: "Hello, Guest\n10"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -271,6 +319,12 @@ const lessonsData = [
     topic: "data structures",
     order: 4,
     isPublished: true,
+    explanation: {
+      description: "Dictionaries store collections of key-value pairs. Keys must be unique and immutable. You can retrieve values safely using the 'get()' method, which returns 'None' (or a specified default) if the key does not exist.",
+      syntax: "my_dict = {key: value}\nval = my_dict.get(key, default)",
+      exampleCode: "user = {\"username\": \"coder\", \"status\": \"active\"}\nprint(user.get(\"username\"))\nprint(user.get(\"age\", \"N/A\"))",
+      exampleOutput: "coder\nN/A"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -300,6 +354,12 @@ const lessonsData = [
     topic: "object oriented",
     order: 5,
     isPublished: true,
+    explanation: {
+      description: "Classes are blue-prints for creating objects. The '__init__' method serves as the class constructor. The first parameter of class methods is 'self', representing the current object instance. Inheritance is done by passing the base class in parentheses.",
+      syntax: "class SubClass(BaseClass):\n    def __init__(self, name):\n        super().__init__()\n        self.name = name",
+      exampleCode: "class Animal:\n    def __init__(self, species):\n        self.species = species\n\nclass Dog(Animal):\n    def __init__(self, name):\n        super().__init__(\"Dog\")\n        self.name = name\n\nd = Dog(\"Buddy\")\nprint(d.name, d.species)",
+      exampleOutput: "Buddy Dog"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -336,6 +396,12 @@ const lessonsData = [
     topic: "basics",
     order: 1,
     isPublished: true,
+    explanation: {
+      description: "TypeScript extends JavaScript by adding static types. Built-in basic types include string, number, and boolean. The 'any' type disables type-checking, while 'never' represents values that are never returned (e.g. infinite loops or error throws).",
+      syntax: "let name: string = \"Alice\";\nlet age: number = 30;",
+      exampleCode: "let message: string = \"Hello World\";\nlet code: any = 101;\ncode = \"changed\"; // Allowed since type is any\n\nconsole.log(message);\nconsole.log(code);",
+      exampleOutput: "Hello World\nchanged"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -365,6 +431,12 @@ const lessonsData = [
     topic: "types",
     order: 2,
     isPublished: true,
+    explanation: {
+      description: "Interfaces define a structure contract for objects. Properties can be marked as optional using the '?' modifier, or read-only using the 'readonly' prefix to prevent field reassignments after instantiation.",
+      syntax: "interface User {\n  readonly id: number;\n  name: string;\n  role?: string;\n}",
+      exampleCode: "interface User {\n  readonly id: number;\n  name: string;\n  role?: string;\n}\n\nconst admin: User = { id: 101, name: \"Alice\" };\n// admin.id = 102; // Error: Cannot assign to 'id' because it is a read-only property.",
+      exampleOutput: "{ id: 101, name: \"Alice\" }"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -399,6 +471,12 @@ const lessonsData = [
     topic: "basics",
     order: 3,
     isPublished: true,
+    explanation: {
+      description: "TypeScript functions validate parameter types and the return type. If a function is built to execute side effects without returning any value, it should be annotated with the 'void' type.",
+      syntax: "function myFunc(param: type): returnType {\n  return value;\n}",
+      exampleCode: "function add(a: number, b: number): number {\n  return a + b;\n}\n\nfunction log(msg: string): void {\n  console.log(msg);\n}\n\nconsole.log(add(5, 5));",
+      exampleOutput: "10"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -428,6 +506,12 @@ const lessonsData = [
     topic: "advanced",
     order: 4,
     isPublished: true,
+    explanation: {
+      description: "Generics enable components to work with varying types rather than a single one. This maintains strict type safety by passing the type argument inside angle brackets, like '<T>' representing the generic type parameter.",
+      syntax: "function funcName<T>(arg: T): T {\n  return arg;\n}",
+      exampleCode: "function identity<T>(arg: T): T {\n  return arg;\n}\n\nconst numVal = identity<number>(10);\nconst strVal = identity<string>(\"DevLingo\");\nconsole.log(numVal, strVal);",
+      exampleOutput: "10 DevLingo"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -462,6 +546,12 @@ const lessonsData = [
     topic: "advanced",
     order: 5,
     isPublished: true,
+    explanation: {
+      description: "TypeScript provides utility types to facilitate type transformations. 'Partial<T>' sets all fields to optional, 'Pick<T, Keys>' selects subset fields, while 'Omit<T, Keys>' constructs a type by removing specific keys.",
+      syntax: "type UpdateUser = Partial<User>;\ntype PublicUser = Omit<User, 'password'>;",
+      exampleCode: "interface User {\n  id: number;\n  username: string;\n  email: string;\n}\n\ntype Summary = Pick<User, \"id\" | \"username\">;\nconst s: Summary = { id: 1, username: \"coder\" };\nconsole.log(s);",
+      exampleOutput: "{ id: 1, username: 'coder' }"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -493,6 +583,12 @@ const lessonsData = [
     topic: "basics",
     order: 1,
     isPublished: true,
+    explanation: {
+      description: "The SELECT statement retrieves data columns from a database table. Use the FROM clause to specify the target table, WHERE to filter rows based on conditions, and LIMIT to cap the number of records returned.",
+      syntax: "SELECT col1, col2\nFROM table_name\nWHERE condition\nLIMIT count;",
+      exampleCode: "SELECT id, username \nFROM users \nWHERE active = 1 \nLIMIT 2;",
+      exampleOutput: "id | username\n---|---------\n1  | alice   \n2  | bob"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -522,6 +618,12 @@ const lessonsData = [
     topic: "basics",
     order: 2,
     isPublished: true,
+    explanation: {
+      description: "SQL filters rows with boolean operators: AND (both conditions), OR (any condition), and NOT. The BETWEEN operator filters within ranges, and LIKE handles wildcard matches ('%' matches zero or more characters).",
+      syntax: "SELECT * FROM products\nWHERE price BETWEEN 10 AND 50\nAND name LIKE 'A%';",
+      exampleCode: "SELECT * FROM users \nWHERE age BETWEEN 20 AND 30 \nAND email LIKE '%@gmail.com';",
+      exampleOutput: "id | email           | age\n---|-----------------|---\n3  | user@gmail.com  | 25"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -551,6 +653,12 @@ const lessonsData = [
     topic: "relationships",
     order: 3,
     isPublished: true,
+    explanation: {
+      description: "JOIN statements merge columns from two tables based on relationships. INNER JOIN extracts rows matching in both tables. LEFT JOIN extracts all rows from the left table and matched ones from the right table (filling NULL for mismatches).",
+      syntax: "SELECT columns FROM tableA\nINNER JOIN tableB\nON tableA.id = tableB.foreign_id;",
+      exampleCode: "SELECT orders.id, users.username\nFROM orders\nINNER JOIN users\nON orders.user_id = users.id;",
+      exampleOutput: "id  | username\n----|---------\n101 | alice   \n102 | bob"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -585,6 +693,12 @@ const lessonsData = [
     topic: "basics",
     order: 4,
     isPublished: true,
+    explanation: {
+      description: "Aggregations compute a single result from multiple row values (COUNT, SUM, AVG). GROUP BY partitions records into categories, and HAVING filters aggregates (similar to how WHERE filters rows).",
+      syntax: "SELECT col, COUNT(*)\nFROM table\nGROUP BY col\nHAVING COUNT(*) > value;",
+      exampleCode: "SELECT department, AVG(salary)\nFROM employees\nGROUP BY department\nHAVING AVG(salary) > 60000;",
+      exampleOutput: "department | AVG(salary)\n-----------|-----------\nTech       | 85000.00"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -614,6 +728,12 @@ const lessonsData = [
     topic: "performance",
     order: 5,
     isPublished: true,
+    explanation: {
+      description: "Indexes speed up data queries at the cost of write storage. PRIMARY KEY constraints auto-generate indexes. You can explicitly instantiate indexes on search queries using the CREATE INDEX keyword.",
+      syntax: "CREATE INDEX idx_name\nON table_name (column_name);",
+      exampleCode: "CREATE INDEX idx_users_email \nON users (email);\n\n-- Running this is now indexed:\nSELECT * FROM users WHERE email = \"test@email.com\";",
+      exampleOutput: "Index idx_users_email created successfully."
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -650,6 +770,12 @@ const lessonsData = [
     topic: "basics",
     order: 1,
     isPublished: true,
+    explanation: {
+      description: "JSX is a markup syntax extension for JavaScript. It permits HTML declarations in React components. Embedded expressions are parsed using curly braces `{}` and component properties are passed as props arguments.",
+      syntax: "const Element = () => {\n  return <div id={value}>Text</div>;\n};",
+      exampleCode: "function Welcome({ name }) {\n  return <h1 className=\"title\">Welcome, {name}!</h1>;\n}\n\n// Usage: <Welcome name=\"Alice\" />",
+      exampleOutput: "<h1 class=\"title\">Welcome, Alice!</h1>"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -689,6 +815,12 @@ const lessonsData = [
     topic: "hooks",
     order: 2,
     isPublished: true,
+    explanation: {
+      description: "The 'useState' hook adds state to React functional components. It yields an array containing the current state value and a setter function. Executing the state updater triggers component re-rendering to keep UI reactive.",
+      syntax: "const [state, setState] = useState(initialValue);",
+      exampleCode: "import { useState } from 'react';\n\nfunction Clicker() {\n  const [count, setCount] = useState(0);\n  return (\n    <button onClick={() => setCount(count + 1)}>Clicks: {count}</button>\n  );\n}",
+      exampleOutput: "[Clicking increments the button number counter dynamically]"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -723,6 +855,12 @@ const lessonsData = [
     topic: "hooks",
     order: 3,
     isPublished: true,
+    explanation: {
+      description: "The 'useEffect' hook executes side effects after render. It supports a dependency array; an empty array '[]' ensures execution occurs once on mount. Returning a callback handles resource cleanup on unmount.",
+      syntax: "useEffect(() => {\n  // effect code\n  return () => { /* cleanup */ };\n}, [deps]);",
+      exampleCode: "import { useEffect } from 'react';\n\nfunction ConsoleLogger() {\n  useEffect(() => {\n    console.log(\"Mounted!\");\n    return () => console.log(\"Unmounted!\");\n  }, []);\n  return <p>Console Logger Active</p>;\n}",
+      exampleOutput: "Mounted!"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -762,6 +900,12 @@ const lessonsData = [
     topic: "basics",
     order: 4,
     isPublished: true,
+    explanation: {
+      description: "Props act as read-only properties to configure components. To handle user interactions, assign callback handlers to event listener props like 'onClick' (clicks) or 'onChange' (inputs).",
+      syntax: "<button onClick={handleClick}>Label</button>",
+      exampleCode: "function CustomButton({ label, onClick }) {\n  return (\n    <button onClick={onClick} className=\"bg-primary p-2\">\n      {label}\n    </button>\n  );\n}",
+      exampleOutput: "[CustomButton calls the parent custom function when clicked]"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -791,6 +935,12 @@ const lessonsData = [
     topic: "hooks",
     order: 5,
     isPublished: true,
+    explanation: {
+      description: "Custom Hooks let you extract and reuse logic across component trees. They are written as JavaScript functions whose names prefix with 'use', allowing internal calls to standard React hooks.",
+      syntax: "function useFeature() {\n  const [state, setState] = useState();\n  return state;\n}",
+      exampleCode: "import { useState, useEffect } from 'react';\n\nfunction useOnline() {\n  const [isOnline, setIsOnline] = useState(navigator.onLine);\n  useEffect(() => {\n    const ping = () => setIsOnline(true);\n    const offline = () => setIsOnline(false);\n    window.addEventListener(\"online\", ping);\n    window.addEventListener(\"offline\", offline);\n    return () => {\n      window.removeEventListener(\"online\", ping);\n      window.removeEventListener(\"offline\", offline);\n    };\n  }, []);\n  return isOnline;\n}",
+      exampleOutput: "[Dynamically returns connection status boolean]"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -827,6 +977,12 @@ const lessonsData = [
     topic: "basics",
     order: 1,
     isPublished: true,
+    explanation: {
+      description: "Node.js organizes codes in module scripts. CommonJS modules use 'require()' to load packages and assign exports to 'module.exports'. Alternatively, ES Modules leverage the 'import' and 'export' keywords.",
+      syntax: "const pkg = require(\"package\");\nmodule.exports = exportedVal;",
+      exampleCode: "// helper.js\nmodule.exports.greet = () => \"Hello Node!\";\n\n// main.js\nconst helper = require(\"./helper\");\nconsole.log(helper.greet());",
+      exampleOutput: "Hello Node!"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -856,6 +1012,12 @@ const lessonsData = [
     topic: "core",
     order: 2,
     isPublished: true,
+    explanation: {
+      description: "The built-in 'fs' module provides APIs to read, write, and delete files. It includes asynchronous APIs (using callbacks/promises) and blocking synchronous API methods (indicated by the 'Sync' suffix).",
+      syntax: "const fs = require('fs');\nfs.readFile(path, encoding, callback);",
+      exampleCode: "const fs = require('fs');\nfs.writeFileSync(\"hello.txt\", \"Hi Node!\");\nconst text = fs.readFileSync(\"hello.txt\", \"utf8\");\nconsole.log(text);",
+      exampleOutput: "Hi Node!"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -890,6 +1052,12 @@ const lessonsData = [
     topic: "web",
     order: 3,
     isPublished: true,
+    explanation: {
+      description: "The native 'http' module allows Node to spin up a web server. Calling 'createServer()' creates a server process that captures incoming requests ('req') and writes responses ('res').",
+      syntax: "const http = require('http');\nconst server = http.createServer((req, res) => {\n  res.end('response content');\n});\nserver.listen(port);",
+      exampleCode: "const http = require('http');\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n  res.end('Ok');\n});\nserver.listen(3000, () => console.log('Listening'));",
+      exampleOutput: "Listening"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -924,6 +1092,12 @@ const lessonsData = [
     topic: "tooling",
     order: 4,
     isPublished: true,
+    explanation: {
+      description: "NPM stands for Node Package Manager. The 'package.json' manifest files in workspaces declare metadata configurations, script shortcuts, and download dependencies required for runtime execution.",
+      syntax: "npm install <pkg>\nnpm run <script>",
+      exampleCode: "// package.json snippet:\n{\n  \"name\": \"app\",\n  \"dependencies\": {\n    \"express\": \"^5.0.0\"\n  },\n  \"scripts\": {\n    \"dev\": \"nodemon server.js\"\n  }\n}",
+      exampleOutput: "[installs libraries and lists them under node_modules]"
+    },
     questions: [
       {
         type: "multiple-choice",
@@ -953,6 +1127,12 @@ const lessonsData = [
     topic: "events",
     order: 5,
     isPublished: true,
+    explanation: {
+      description: "Node.js leverages event-driven patterns using the 'events' module's 'EventEmitter' class. It enables objects to bind custom listeners using 'on()' and broadcast notifications using 'emit()'.",
+      syntax: "const EventEmitter = require('events');\nconst emitter = new EventEmitter();\nemitter.on('event', callback);\nemitter.emit('event', args);",
+      exampleCode: "const EventEmitter = require('events');\nconst emitter = new EventEmitter();\n\nemitter.on(\"status\", (status) => console.log(`Server status: ${status}`));\nemitter.emit(\"status\", \"online\");",
+      exampleOutput: "Server status: online"
+    },
     questions: [
       {
         type: "multiple-choice",

@@ -1,15 +1,41 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import type { Question } from "../types";
+import type { Question, Explanation } from "../types";
 import { useAuthStore } from "../store/authStore";
 
 interface FullLesson {
   _id: string;
   title: string;
   language: string;
+  topic?: string;
   questions: Question[];
+  explanation?: Explanation;
 }
+
+const getFileExtension = (lang: string): string => {
+  const mapping: Record<string, string> = {
+    javascript: "js",
+    typescript: "ts",
+    python: "py",
+    sql: "sql",
+    react: "jsx",
+    nodejs: "js"
+  };
+  return mapping[lang.toLowerCase()] || "txt";
+};
+
+const getLanguageLabel = (lang: string): string => {
+  const mapping: Record<string, string> = {
+    javascript: "JavaScript",
+    typescript: "TypeScript",
+    python: "Python",
+    sql: "SQL",
+    react: "React",
+    nodejs: "Node.js"
+  };
+  return mapping[lang.toLowerCase()] || lang;
+};
 
 export default function LessonPage() {
   const { id } = useParams();
@@ -27,12 +53,16 @@ export default function LessonPage() {
   const [xpEarned, setXpEarned] = useState(0);
   const [loading, setLoading] = useState(true);
   const [shakeHearts, setShakeHearts] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(true);
 
   useEffect(() => {
     const fetchLesson = async () => {
       try {
         const res = await api.get(`/lessons/single/${id}`);
         setLesson(res.data);
+        if (!res.data.explanation || !res.data.explanation.description) {
+          setShowExplanation(false);
+        }
       } catch {
         navigate("/home");
       } finally {
@@ -68,6 +98,135 @@ export default function LessonPage() {
   }
 
   if (!lesson) return null;
+
+  // W3SCHOOLS-INSPIRED EXPLANATION PHASE
+  if (showExplanation && lesson.explanation) {
+    const { explanation } = lesson;
+    return (
+      <div className="min-h-screen bg-dark text-white flex flex-col">
+        {/* Header */}
+        <div className="px-8 py-4 flex items-center justify-between border-b border-gray-800">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-400 hover:text-white transition-all text-xl"
+            >
+              ✕
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-1 bg-yellow-500/10 text-yellow-500 text-xs font-bold rounded-md uppercase tracking-wider border border-yellow-500/20">
+                💡 Lesson Guide
+              </span>
+              <span className="text-gray-500 text-sm hidden sm:inline">•</span>
+              <span className="text-gray-400 text-sm hidden sm:inline font-medium">
+                Review before you practice
+              </span>
+            </div>
+          </div>
+          <div className={`flex items-center gap-1.5 transition-all duration-300 ${shakeHearts ? "animate-shake text-danger" : ""}`}>
+            <span className="text-danger text-xl">❤️</span>
+            <span className="font-extrabold text-danger text-lg">{user?.hearts ?? 5}</span>
+          </div>
+        </div>
+
+        {/* Learning Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-3xl mx-auto px-6 py-10 animate-slideUp">
+            {/* Meta Header */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-primary font-bold text-xs uppercase tracking-widest">
+                {getLanguageLabel(lesson.language)}
+              </span>
+              {lesson.topic && (
+                <>
+                  <span className="text-gray-600 text-[10px]">•</span>
+                  <span className="text-gray-400 font-semibold text-xs uppercase tracking-wider">
+                    {lesson.topic}
+                  </span>
+                </>
+              )}
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 tracking-tight leading-tight">
+              {lesson.title}
+            </h1>
+
+            {/* 📖 Description Card */}
+            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 sm:p-8 mb-6 backdrop-blur-sm shadow-lg">
+              <h3 className="text-white font-bold text-lg mb-3 flex items-center gap-2">
+                <span>📖</span> Concept Overview
+              </h3>
+              <p className="text-gray-300 leading-relaxed text-base sm:text-lg">
+                {explanation.description}
+              </p>
+            </div>
+
+            {/* 💻 Syntax Card */}
+            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 mb-6 backdrop-blur-sm shadow-lg">
+              <h3 className="text-white font-bold text-lg mb-3 flex items-center gap-2">
+                <span>💻</span> Syntax Guide
+              </h3>
+              <div className="bg-black/40 border border-gray-800 rounded-xl overflow-hidden">
+                <pre className="font-mono text-sm p-4 overflow-x-auto text-yellow-400 leading-relaxed">
+                  <code>{explanation.syntax}</code>
+                </pre>
+              </div>
+            </div>
+
+            {/* 🔍 Try it Yourself Code Example */}
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl mb-8">
+              {/* Window Header */}
+              <div className="bg-gray-800/80 px-5 py-3.5 border-b border-gray-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-danger block"></span>
+                  <span className="w-3 h-3 rounded-full bg-warning block"></span>
+                  <span className="w-3 h-3 rounded-full bg-primary block"></span>
+                  <span className="text-xs text-gray-400 font-mono ml-2">
+                    example.{getFileExtension(lesson.language)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 bg-gray-800 px-2.5 py-1 rounded text-[10px] text-gray-400 uppercase tracking-widest font-bold font-mono">
+                  <span>⚡</span> Live Code
+                </div>
+              </div>
+
+              {/* Window Body (Code Editor Mockup) */}
+              <div className="p-6 bg-[#0c0f16] font-mono text-sm text-gray-200 overflow-x-auto leading-relaxed border-b border-gray-800">
+                <pre className="text-green-400/90">
+                  <code>{explanation.exampleCode}</code>
+                </pre>
+              </div>
+
+              {/* Console Output Header */}
+              <div className="bg-gray-800/40 px-5 py-2.5 border-b border-gray-800 flex items-center justify-between">
+                <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">
+                  💻 Simulated Console Output
+                </span>
+                <span className="text-[10px] text-gray-500 font-mono">Active</span>
+              </div>
+
+              {/* Console Output Body */}
+              <div className="p-5 bg-black/60 font-mono text-xs text-green-400 min-h-[70px] flex items-center">
+                <pre className="w-full whitespace-pre-wrap">{explanation.exampleOutput}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-8 py-6 border-t border-gray-800 bg-dark/95 backdrop-blur-md">
+          <div className="max-w-3xl mx-auto flex justify-end">
+            <button
+              onClick={() => setShowExplanation(false)}
+              className="w-full sm:w-auto bg-primary hover:bg-green-600 text-white font-bold py-4 px-12 rounded-xl transition-all text-lg shadow-lg hover:scale-[1.02] shadow-primary/20 active:scale-[0.98]"
+            >
+              Start Practice →
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const question = lesson.questions[current];
   const total = lesson.questions.length;

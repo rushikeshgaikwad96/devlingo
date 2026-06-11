@@ -27,3 +27,10 @@ export interface Question {
   correct: string;
   xpReward: number;
 }
+
+export interface Explanation {
+  description: string;
+  syntax: string;
+  exampleCode: string;
+  exampleOutput: string;
+}
