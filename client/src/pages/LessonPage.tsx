@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import type { Question, Explanation } from "../types";
 import { useAuthStore } from "../store/authStore";
+import { playCorrectSound, playIncorrectSound, playCompleteSound } from "../utils/sounds";
 
 interface FullLesson {
   _id: string;
@@ -261,7 +262,9 @@ export default function LessonPage() {
     setAnswered(true);
     if (isCorrect) {
       setScore((s) => s + 1);
+      playCorrectSound();
     } else {
+      playIncorrectSound();
       // Wrong answer - trigger shake and call API
       setShakeHearts(true);
       setTimeout(() => setShakeHearts(false), 500);
@@ -282,6 +285,7 @@ export default function LessonPage() {
       setAnswered(false);
       setCorrect(false);
     } else {
+      playCompleteSound();
       try {
         const res = await api.post("/lessons/complete", {
           lessonId: lesson._id,

@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const userController_1 = require("../controllers/userController");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const router = (0, express_1.Router)();
+router.get("/progress", authMiddleware_1.protect, userController_1.getUserProgress);
+router.get("/leaderboard", authMiddleware_1.protect, userController_1.getLeaderboard);
+router.post("/lose-heart", authMiddleware_1.protect, userController_1.loseHeart);
+router.post("/restore-hearts", authMiddleware_1.protect, userController_1.restoreHearts);
+router.get("/stats", authMiddleware_1.protect, userController_1.getUserStats);
+router.put("/update", authMiddleware_1.protect, userController_1.updateProfile);
+exports.default = router;
